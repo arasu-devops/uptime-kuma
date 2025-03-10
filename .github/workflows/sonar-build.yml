@@ -1,4 +1,4 @@
-name: Build
+name: Build and Analyze
 
 on:
   push:
@@ -6,15 +6,14 @@ on:
       - master
 
 jobs:
-  build:
-    name: Build and analyze
+  sonar:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for better relevancy of analysis
+          fetch-depth: 0  
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
@@ -25,11 +24,6 @@ jobs:
           args: >
             -Dsonar.projectKey=arasu-devops_uptime-kuma_23bec7b6-2834-4ac3-8cd2-34fe16d1d9e3
             -Dsonar.organization=my-org
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
             -Dsonar.sources=.
-
-      # Uncomment the following step to fail the workflow if the SonarQube Quality Gate fails
-      # - name: SonarQube Quality Gate
-      #   uses: SonarSource/sonarqube-quality-gate-action@v1
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
